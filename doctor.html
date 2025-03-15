@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Filtering Doctor</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			text-align: center;
+			margin: 20px;
+		}
+		input{
+			padding: 5px;
+		}
+		.main {
+			max-width: 600px;
+			margin: auto;
+		}
+		.doctor_lists {
+			margin-top: 20px;
+		}
+		.doctor {
+			border: 1px solid #ddd;
+			padding: 15px;
+			margin-bottom: 10px;
+			border-radius: 5px;
+			position: relative;
+			background: #f9f9f9;
+		}
+		.close-btn {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			background: red;
+			color: white;
+			border: none;
+			padding: 5px 10px;
+			cursor: pointer;
+			border-radius: 50%;
+			font-size: 14px;
+			width: auto;
+		}
+		button {
+			background: #28a745;
+			color: white;
+			border: none;
+			padding: 10px 15px;
+			cursor: pointer;
+			border-radius: 5px;
+			font-size: 16px;
+			width: 100%;
+			margin-top: 10px;
+		}
+		button:hover {
+			background: #218838;
+		}
+		.result {
+			margin-top: 20px;
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+
+	<h2>Filtering Doctor</h2>
+
+	<div class="main">
+		<div class="doctor_lists">
+			<div class="doctor">
+				<button class="close-btn" onclick="removeDoctor(this)">X</button>
+				<p>Add Doctor Name:</p>
+				<p><input type="text" class="doctor_name"></p>
+				<p>Running Patients Number:</p>
+				<p><input type="number" class="rp_number"></p>
+				<p>Checkup Rate (Patients/Minute):</p>
+				<p><input type="number" class="pc_number" step="0.1"></p>
+			</div>
+		</div>
+		<p><button style="width:auto;" onclick="addDoctor()">Add More Doctor</button></p>
+		<p><button onclick="calculateTime()">Calculate</button></p>
+		<div class="result"></div>
+	</div>
+
+	<script>
+		function addDoctor() {
+			let doctorList = document.querySelector(".doctor_lists");
+			let newDoctor = document.createElement("div");
+			newDoctor.classList.add("doctor");
+			newDoctor.innerHTML = `
+                <button class="close-btn" onclick="removeDoctor(this)">X</button>
+                <p>Add Doctor Name:</p>
+                <p><input type="text" class="doctor_name"></p>
+                <p>Running Patients Number:</p>
+                <p><input type="number" class="rp_number"></p>
+                <p>Patient Checking Per Minute:</p>
+                <p><input type="number" class="pc_number" step="0.1"></p>
+			`;
+			doctorList.appendChild(newDoctor);
+		}
+
+		function removeDoctor(button) {
+			button.parentElement.remove();
+		}
+
+		function calculateTime() {
+			let doctors = document.querySelectorAll(".doctor");
+			let results = [];
+			
+			doctors.forEach(doctor => {
+				let name = doctor.querySelector(".doctor_name").value.trim();
+				let patients = parseFloat(doctor.querySelector(".rp_number").value);
+				let rate = parseFloat(doctor.querySelector(".pc_number").value);
+				
+				if (name && !isNaN(patients) && !isNaN(rate) && rate > 0) {
+                    let time = patients / rate; // Time in minutes
+                    results.push({ name, time });
+                }
+            });
+
+			results.sort((a, b) => a.time - b.time);
+			
+			let resultDiv = document.querySelector(".result");
+			resultDiv.innerHTML = "<h3>Doctor Availability</h3>" + results.map(d => `<p>${d.name} will be free in ${d.time.toFixed(2)} minutes</p>`).join(" ");
+		}
+	</script>
+
+</body>
+</html>
